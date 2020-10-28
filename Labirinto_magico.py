@@ -36,12 +36,34 @@ def ageHerb(matrix,posL,posC,age,ageLimit,heroic):
         heroic=True
     return ageHerb,heroic
 
+def direcao(matrix,posL,posC,ageDir,ageLimit,heroicDir,path,imunity,ageHerbDir):
+    movement=[-1,1]
+    yMovement=[' N',' S']
+    xMovement=[' O',' L']
+    for i in range(2):
+        if(0<=matrix[posL+movement[i]][posC]<=3):
+            posL+=movement[i]
+            ageDir=age(matrix,posL,posC,ageDir,imunity)
+            if(matrix[posL][posC]==0):
+                ageHerbDir,heroicDir=ageHerb(matrix,posL,posC,ageDir,ageLimit,heroicDir)
+            path+=yMovement[i]
+            matrix[posL][posC]=-1
+            return matrix, posL, posC, ageDir, heroicDir, path, ageHerbDir
+        
+        elif(0<=matrix[posL][posC+movement[i]]<=3):
+            posC+=movement[i]
+            ageDir=age(matrix,posL,posC,ageDir,imunity)
+            if(matrix[posL][posC]==0):
+                ageHerbDir,heroicDir=ageHerb(matrix,posL,posC,ageDir,ageLimit,heroicDir)
+            path+=xMovement[i]
+            matrix[posL][posC]=-1
+            return matrix, posL, posC, ageDir, heroicDir, path, ageHerbDir
+
 teste=int(input())
-
 for test in range(teste):
-
     imune=False
     heroi=False
+    idadeErva=None
     caminho="N"
     idade, idadeLimite=input().split()
     idade=int(idade)
@@ -67,37 +89,8 @@ for test in range(teste):
     
     while(True):
         try:
-            if(0<=labirinto[posLinha-1][posColuna]<=3):
-                posLinha-=1
-                idade=age(labirinto,posLinha,posColuna,idade,imune)
-                if(labirinto[posLinha][posColuna]==0):
-                    idadeErva,heroi=ageHerb(labirinto,posLinha,posColuna,idade,idadeLimite,heroi)
-                caminho+=" N"
-                labirinto[posLinha][posColuna]=-1
-                
-            elif(0<=labirinto[posLinha+1][posColuna]<=3):
-                posLinha+=1
-                idade=age(labirinto,posLinha,posColuna,idade,imune)
-                if(labirinto[posLinha][posColuna]==0):
-                    idadeErva,heroi=ageHerb(labirinto,posLinha,posColuna,idade,idadeLimite,heroi)
-                caminho+=" S"
-                labirinto[posLinha][posColuna]=-1
-        
-            elif(0<=labirinto[posLinha][posColuna-1]<=3):
-                posColuna-=1
-                idade=age(labirinto,posLinha,posColuna,idade,imune)
-                if(labirinto[posLinha][posColuna]==0):
-                    idadeErva,heroi=ageHerb(labirinto,posLinha,posColuna,idade,idadeLimite,heroi)
-                caminho+=" O"
-                labirinto[posLinha][posColuna]=-1
-        
-            elif(0<=labirinto[posLinha][posColuna+1]<=3):
-                posColuna+=1
-                idade=age(labirinto,posLinha,posColuna,idade,imune)
-                if(labirinto[posLinha][posColuna]==0):
-                    idadeErva,heroi=ageHerb(labirinto,posLinha,posColuna,idade,idadeLimite,heroi)
-                caminho+=" L"
-                labirinto[posLinha][posColuna]=-1
+            labirinto,posLinha,posColuna,idade,heroi,caminho,idadeErva=\
+                  direcao(labirinto,posLinha,posColuna,idade,idadeLimite,heroi,caminho,imune,idadeErva)
             
         except IndexError:
             caminho+=" S"
